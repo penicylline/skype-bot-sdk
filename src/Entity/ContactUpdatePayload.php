@@ -2,7 +2,7 @@
 
 namespace SkypeBot\Entity;
 
-class ContactUpdatePayload
+class ContactUpdatePayload extends Payload
 {
     const ACTION_ADD = 'add';
     const ACTION_REMVOVE = 'remove';

@@ -9,6 +9,11 @@ class Message extends Command {
     protected $message;
     protected $conversation;
 
+    /**
+     * Message constructor.
+     * @param $message
+     * @param $conversation
+     */
     public function __construct($message, $conversation) {
         $this->message = $message;
         $this->conversation = $conversation;

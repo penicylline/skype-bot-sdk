@@ -16,7 +16,7 @@ class DataProviderTest extends TestCase
         $this->bot = SkypeBot\SkypeBot::init($config, $storage);
     }
 
-    function testTokenProvider()
+    function testProviders()
     {
         $now = time();
         $this->bot->set('http_client', $this->createHttpClientMock());

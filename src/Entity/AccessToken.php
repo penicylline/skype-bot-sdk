@@ -4,10 +4,10 @@ namespace SkypeBot\Entity;
 
 class AccessToken extends Entity
 {
-    public function __construct($obj, $validate = true)
+    public function __construct($obj)
     {
         $obj->expried_time = time() + $obj->expires_in;
-        parent::__construct($obj, $validate);
+        parent::__construct($obj);
     }
 
     public function getToken() {

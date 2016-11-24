@@ -2,7 +2,7 @@ language: php
 sudo: false
 
 php:
-  - 5.4
+  - 5.5
 
 addons:
   code_climate:

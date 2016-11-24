@@ -14,7 +14,6 @@ class HttpClient {
     protected $headers = array();
     protected $cookies = array();
     protected $error;
-    protected $result;
     protected $info;
     private static $instance;
 
@@ -90,12 +89,12 @@ class HttpClient {
         $this->log($url);
         curl_setopt($channel, CURLOPT_URL, $url);
 
-        $this->result = $this->fetchResult($channel);
-        if (!$this->result) {
+        $result = $this->fetchResult($channel);
+        if (!$result) {
             $this->error = curl_error($channel);
         }
         $this->closeCurl($channel);
-        return $this->result;
+        return $result;
     }
 
     public function post($url, $params = array())
@@ -116,13 +115,13 @@ class HttpClient {
         }
         curl_setopt($channel, CURLOPT_POSTFIELDS, $strParams);
 
-        $this->result = $this->fetchResult($channel);
-        if (!$this->result) {
+        $result = $this->fetchResult($channel);
+        if (!$result) {
             $this->error = curl_error($channel);
             $this->log($this->error);
         }
         $this->closeCurl($channel);
-        return $this->result ? true : false;
+        return $result;
     }
 
     public function getError() {
@@ -141,8 +140,8 @@ class HttpClient {
 
     public function getReturnCode()
     {
-        if (is_array($this->info) && isset($this->info[CURLINFO_HTTP_CODE])) {
-            return $this->info[CURLINFO_HTTP_CODE];
+        if (is_array($this->info) && isset($this->info['http_code'])) {
+            return $this->info['http_code'];
         }
         return null;
     }

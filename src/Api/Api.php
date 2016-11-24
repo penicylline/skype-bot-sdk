@@ -26,6 +26,12 @@ class Api {
         $this->options = $options;
     }
 
+    public function setHeader($key, $value)
+    {
+        $this->options[static::PARAM_HEADERS][$key] = $value;
+        return $this;
+    }
+
     public function setRequestMethod($method)
     {
         if ($method === HttpClient::METHOD_GET) {

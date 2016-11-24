@@ -8,13 +8,14 @@ use SkypeBot\Interfaces\ApiLogger;
 class SimpleApiLogger implements ApiLogger
 {
     private $handler;
+
     public function __construct()
     {
         if (php_sapi_name() === 'cli') {
             $this->handler = fopen('php://output', 'w');
-        } else {
-            $this->handler = fopen('php://memory', 'w');
+            return;
         }
+        $this->handler = fopen('php://memory', 'w');
     }
 
     public function __destruct()

@@ -9,6 +9,7 @@ use SkypeBot\DataProvider\OpenIdKeysProvider;
 use SkypeBot\DataProvider\TokenProvider;
 use SkypeBot\Interfaces\DataStorage;
 use SkypeBot\Listener\Dispatcher;
+use SkypeBot\Listener\Request;
 use SkypeBot\Listener\Security;
 
 class SkypeBot
@@ -94,6 +95,9 @@ class SkypeBot
         $this->set('dispatcher', function() {
             return new Dispatcher(SkypeBot::getInstance()->getSecurity());
         });
+        $this->set('request', function() {
+            return new Request();
+        });
     }
 
     /**
@@ -103,9 +107,7 @@ class SkypeBot
      */
     public static function init(Config $config, DataStorage $dataStorage)
     {
-        if (static::$instance === null) {
-            static::$instance = new SkypeBot($config, $dataStorage);
-        }
+        static::$instance = new SkypeBot($config, $dataStorage);
         return static::$instance;
     }
 
@@ -190,7 +192,15 @@ class SkypeBot
      */
     public function getNotificationListener()
     {
-        $this->get('dispatcher');
+        return $this->get('dispatcher');
+    }
+
+    /**
+     * @return Request
+     */
+    public function getRequest()
+    {
+        return $this->get('request');
     }
 
     /**

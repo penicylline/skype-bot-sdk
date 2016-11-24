@@ -11,6 +11,7 @@ use SkypeBot\Interfaces\ApiLogger;
 use SkypeBot\Interfaces\ContactUpdateHandler;
 use SkypeBot\Interfaces\ConversationUpdateHandler;
 use SkypeBot\Interfaces\MessageHandler;
+use SkypeBot\SkypeBot;
 
 class Dispatcher
 {
@@ -50,13 +51,13 @@ class Dispatcher
     {
         $payload = $this->fetchRequest();
         if ($payload instanceof MessagePayload) {
-            $this->handleMessage();
+            $this->handleMessage($payload);
         }
         if ($payload instanceof ConversationUpdatePayload) {
-            $this->handleContactUpdate();
+            $this->handleConversationUpdate($payload);
         }
         if ($payload instanceof ContactUpdatePayload) {
-            $this->handleContactUpdate();
+            $this->handleContactUpdate($payload);
         }
 
         $this->sendResponse();
@@ -88,13 +89,19 @@ class Dispatcher
 
     protected function fetchRequest()
     {
-        $this->validateAuthenticateHeader();
-        $requestBody = file_get_contents('php://input');
+        $request = SkypeBot::getInstance()->getRequest();
+        $headers = $request->getHeaders();
+        if (!isset($headers['Authorization'])) {
+            throw new SecurityException('Request missing authorization header');
+        }
+        $this->validateAuthenticateHeader($headers['Authorization']);
+
+        $requestBody = $request->getRawBody();
         $requestObj = json_decode($requestBody);
         if (empty($requestObj)) {
             throw new PayloadException('Empty or invalid json format: "' . $requestBody . '"');
         }
-        $this->logRequest($requestBody);
+        $this->logRequest($request->getHeaders(), $requestBody);
         return PayloadFactory::createPayload($requestObj);
     }
 
@@ -104,8 +111,7 @@ class Dispatcher
     }
 
     protected function handleMessage(MessagePayload $payload) {
-        if ($this->messageHandler === null)
-        {
+        if ($this->messageHandler === null) {
             return;
         }
         if ($this->messageHandler instanceof MessageHandler) {
@@ -117,8 +123,7 @@ class Dispatcher
     }
 
     protected function handleContactUpdate(ContactUpdatePayload $payload) {
-        if ($this->contactUpdateHandler === null)
-        {
+        if ($this->contactUpdateHandler === null) {
             return;
         }
         if ($this->contactUpdateHandler instanceof ContactUpdateHandler) {
@@ -142,42 +147,20 @@ class Dispatcher
         }
     }
 
-    protected function validateAuthenticateHeader()
+    protected function validateAuthenticateHeader($authHeader)
     {
-        $headers = $this->getAllHeaders();
-        if (!isset($headers['Authorization'])) {
-            throw new SecurityException('Request missing authorization header');
-        }
-
-        $result = $this->security->validateBearerHeader($headers['Authorization']);
+        $result = $this->security->validateBearerHeader($authHeader);
         if ($result != 1) {
             throw new SecurityException('Invalid authenticate data');
         }
     }
 
-    protected function logRequest($requestBody)
+    protected function logRequest($requestHeader, $requestBody)
     {
         if ($this->apiLogger === null) {
             return;
         }
-        $headers = $this->getAllHeaders();
-        $message = print_r($headers, true) . PHP_EOL . $requestBody;
+        $message = print_r($requestHeader, true) . PHP_EOL . $requestBody;
         $this->apiLogger->log($message);
-    }
-
-    private function getAllHeaders()
-    {
-        if ($this->headers ===  null) {
-            if (function_exists('getallheaders')) {
-                return getallheaders();
-            }
-            $this->headers = [];
-            foreach ($_SERVER as $name => $value) {
-                if (substr($name, 0, 5) == 'HTTP_') {
-                    $this->headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
-                }
-            }
-        }
-        return $this->headers;
     }
 }

@@ -30,7 +30,7 @@ class ApiClient {
     }
 
     /**
-     * @return Client
+     * @return ApiClient
      * @throws \Exception
      */
     public static function getInstance()

@@ -11,36 +11,42 @@ class Payload extends Entity
 
     protected $type;
 
-    public function getChannelId() {
+    public function getChannelId()
+    {
         return $this->get('channelId');
     }
 
-    public function getServiceUrl() {
+    public function getServiceUrl()
+    {
         return $this->get('serviceUrl');
     }
 
     /**
      * @return Conversation
      */
-    public function getConversation() {
+    public function getConversation()
+    {
         return $this->get('conversation', Conversation::class);
     }
 
     /**
      * @return Address
      */
-    public function getFrom() {
+    public function getFrom()
+    {
         return $this->get('from', Address::class);
     }
 
     /**
      * @return Address
      */
-    public function getRecipient() {
+    public function getRecipient()
+    {
         return $this->get('recipient', Address::class);
     }
 
-    public function getType() {
+    public function getType()
+    {
         if ($this->type == null) {
             switch ($this->get('type')) {
                 case 'message/text':

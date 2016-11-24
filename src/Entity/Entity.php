@@ -7,10 +7,8 @@ abstract class Entity
 {
     protected $rawObj;
 
-    public function __construct($obj, $validate = false) {
-        if ($validate) {
-            $this->validateObject($obj);
-        }
+    public function __construct($obj) {
+        $this->validateObject($obj);
         $this->rawObj = $obj;
     }
 
