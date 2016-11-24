@@ -7,6 +7,7 @@ use SkypeBot\Interfaces\ApiLogger;
 use SkypeBot\Storage\SimpleApiLogger;
 
 class HttpClient {
+
     const METHOD_POST = 'post';
     const METHOD_GET = 'get';
 
@@ -73,7 +74,7 @@ class HttpClient {
             $params = array();
         }
         $strParams = http_build_query($params);
-        $ch = $this->initCurl();
+        $channel = $this->initCurl();
         if (strpos($url, '?')) {
             if (substr($url, -1) == '&') {
                 $url .= $strParams;
@@ -87,13 +88,13 @@ class HttpClient {
         }
         $this->log('>>>>>> GET >>>>>>');
         $this->log($url);
-        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($channel, CURLOPT_URL, $url);
 
-        $this->result = $this->fetchResult($ch);
+        $this->result = $this->fetchResult($channel);
         if (!$this->result) {
-            $this->error = curl_error($ch);
+            $this->error = curl_error($channel);
         }
-        $this->closeCurl($ch);
+        $this->closeCurl($channel);
         return $this->result;
     }
 
@@ -107,20 +108,20 @@ class HttpClient {
         } else {
             $strParams = http_build_query($params);
         }
-        $ch = $this->initCurl();
+        $channel = $this->initCurl();
         
-        curl_setopt($ch,CURLOPT_URL, $url);
+        curl_setopt($channel, CURLOPT_URL, $url);
         if (!is_string($params)) {
-            curl_setopt($ch, CURLOPT_POST, count($params));
+            curl_setopt($channel, CURLOPT_POST, count($params));
         }
-        curl_setopt($ch,CURLOPT_POSTFIELDS, $strParams);
+        curl_setopt($channel, CURLOPT_POSTFIELDS, $strParams);
 
-        $this->result = $this->fetchResult($ch);
+        $this->result = $this->fetchResult($channel);
         if (!$this->result) {
-            $this->error = curl_error($ch);
+            $this->error = curl_error($channel);
             $this->log($this->error);
         }
-        $this->closeCurl($ch);
+        $this->closeCurl($channel);
         return $this->result ? true : false;
     }
 
@@ -128,12 +129,12 @@ class HttpClient {
         return $this->error;
     }
 
-    protected function fetchResult($ch)
+    protected function fetchResult($channel)
     {
         $this->log('===============================');
-        $response = curl_exec($ch);
+        $response = curl_exec($channel);
         $this->log($response);
-        $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $headerSize = curl_getinfo($channel, CURLINFO_HEADER_SIZE);
         $body = substr($response, $headerSize);
         return $body;
     }
@@ -148,18 +149,18 @@ class HttpClient {
 
     private function initCurl()
     {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($ch, CURLOPT_HEADER, 1);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $this->buildHeaders());
-        return $ch;
+        $channel = curl_init();
+        curl_setopt($channel, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($channel, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($channel, CURLOPT_HEADER, 1);
+        curl_setopt($channel, CURLOPT_HTTPHEADER, $this->buildHeaders());
+        return $channel;
     }
 
-    private function closeCurl($ch)
+    private function closeCurl($channel)
     {
-        $this->info = curl_getinfo($ch);
-        curl_close($ch);
+        $this->info = curl_getinfo($channel);
+        curl_close($channel);
     }
 
     private function buildHeaders()

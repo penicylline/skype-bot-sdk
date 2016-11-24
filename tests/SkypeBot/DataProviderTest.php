@@ -18,26 +18,24 @@ class DataProviderTest extends TestCase
 
     function testTokenProvider()
     {
-
         $now = time();
+        $this->bot->set('http_client', $this->createHttpClientMock());
 
-        $this->bot->set('httpClient', $this->createHttpClientMock());
-
+        //
         $token = $this->bot->getTokenProvider()->getAccessToken();
         $this->assertGreaterThan($now, $token->getExpiredTime());
         $this->assertEquals($token->getToken(), 1);
-
         $this->assertEquals($this->bot->getTokenProvider()->getAccessToken()->getToken(), 1);
-
         $this->bot->getTokenProvider()->clearToken();
         $this->assertNull($this->bot->getDataStorage()->get(\SkypeBot\DataProvider\TokenProvider::KEY_STORAGE));
 
-
+        //
         $config = $this->bot->getOpenIdConfigProvider()->getConfig();
         $this->assertEquals($config->getIssuer(), 1);
         $this->assertEquals($config->getJwksUri(), 2);
         $this->assertEquals($config->getSigningAlg(), 4);
 
+        //
         $keys = $this->bot->getOpenIdKeysProvider()->getKeys();
         $this->assertEquals(count($keys), 1);
         $key = array_shift($keys);

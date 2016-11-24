@@ -4,8 +4,14 @@ sudo: false
 php:
   - 5.4
 
-script: phpunit --coverage-clover=coverage.clover
+addons:
+  code_climate:
+    repo_token: 4e46bba90af9f2a2e37ce22be162c47b329a646e258038ef937028e02f2a464b
+
+before_script:
+  - composer install --dev
+
+script: phpunit --coverage-clover build/logs/clover.xml
 
 after_script:
-  - wget https://scrutinizer-ci.com/ocular.phar
-  - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+  - vendor/bin/test-reporter

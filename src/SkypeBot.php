@@ -18,6 +18,10 @@ class SkypeBot
      */
     protected static $instance;
 
+    protected $resolvedObjs;
+
+    protected $rawObjs;
+
     /**
      * @var Config
      */
@@ -60,8 +64,36 @@ class SkypeBot
 
     private function __construct(Config $config, DataStorage $dataStorage)
     {
-        $this->config = $config;
-        $this->dataStorage = $dataStorage;
+        $this->resolvedObjs = array();
+        $this->rawObjs = array();
+        $this->set('config', $config);
+        $this->set('data_storage', $dataStorage);
+        $this->initComponents($config, $dataStorage);
+    }
+
+    protected function initComponents(Config $config, DataStorage $dataStorage)
+    {
+        $this->set('api_client', function (){
+            return ApiClient::getInstance();
+        });
+        $this->set('openid_config', function () use($dataStorage) {
+            return new OpenIdConfigProvider($dataStorage);
+        });
+        $this->set('openid_keys', function () use($dataStorage) {
+            return new OpenIdKeysProvider($dataStorage);
+        });
+        $this->set('token_provider', function() use($dataStorage) {
+            return new TokenProvider($dataStorage);
+        });
+        $this->set('http_client', function() {
+            return HttpClient::getInstance();
+        });
+        $this->set('security', function() {
+            return new Security(SkypeBot::getInstance()->getOpenIdKeysProvider());
+        });
+        $this->set('dispatcher', function() {
+            return new Dispatcher(SkypeBot::getInstance()->getSecurity());
+        });
     }
 
     /**
@@ -84,7 +116,7 @@ class SkypeBot
     public static function getInstance()
     {
         if (static::$instance === null) {
-            throw new \Exception('');
+            throw new \Exception('SkypeBot not initialized.');
         }
         return static::$instance;
     }
@@ -94,7 +126,7 @@ class SkypeBot
      */
     public function getConfig()
     {
-        return $this->config;
+        return $this->get('config');
     }
 
     /**
@@ -102,7 +134,7 @@ class SkypeBot
      */
     public function getDataStorage()
     {
-        return $this->dataStorage;
+        return $this->get('data_storage');
     }
 
     /**
@@ -110,10 +142,7 @@ class SkypeBot
      */
     public function getApiClient()
     {
-        if ($this->apiClient === null) {
-            $this->apiClient = ApiClient::getInstance();
-        }
-        return $this->apiClient;
+        return $this->get('api_client');
     }
 
     /**
@@ -121,10 +150,7 @@ class SkypeBot
      */
     public function getOpenIdConfigProvider()
     {
-        if ($this->openIdConfigProvider === null) {
-            $this->openIdConfigProvider = new OpenIdConfigProvider($this->getDataStorage());
-        }
-        return $this->openIdConfigProvider;
+        return $this->get('openid_config');
     }
 
     /**
@@ -132,10 +158,7 @@ class SkypeBot
      */
     public function getOpenIdKeysProvider()
     {
-        if ($this->openIdKeysProvider === null) {
-            $this->openIdKeysProvider = new OpenIdKeysProvider($this->getDataStorage());
-        }
-        return $this->openIdKeysProvider;
+        return $this->get('openid_keys');
     }
 
     /**
@@ -143,10 +166,7 @@ class SkypeBot
      */
     public function getTokenProvider()
     {
-        if ($this->tokenProvider === null) {
-            $this->tokenProvider = new TokenProvider($this->getDataStorage());
-        }
-        return $this->tokenProvider;
+        return $this->get('token_provider');
     }
 
     /**
@@ -154,10 +174,15 @@ class SkypeBot
      */
     public function getHttpClient()
     {
-        if ($this->httpClient === null) {
-            $this->httpClient = HttpClient::getInstance();
-        }
-        return $this->httpClient;
+        return $this->get('http_client');
+    }
+
+    /**
+     * @return Security
+     */
+    public function getSecurity()
+    {
+        return $this->get('security');
     }
 
     /**
@@ -165,18 +190,56 @@ class SkypeBot
      */
     public function getNotificationListener()
     {
-        if ($this->notificationListener === null) {
-            $security = new Security($this->getOpenIdKeysProvider());
-            $this->notificationListener = new Dispatcher($security);
-        }
-        return $this->notificationListener;
+        $this->get('dispatcher');
     }
 
-    public function set($property, $value)
+    /**
+     * @param $key
+     * @param $value
+     * @return $this
+     */
+    public function set($key, $value)
     {
-        if (property_exists($this, $property)) {
-            $this->{$property} = $value;
-        }
+        $this->rawObjs[$key] = $value;
+        unset($this->resolvedObjs[$key]);
         return $this;
     }
+
+    /**
+     * @param $key
+     * @return mixed
+     */
+    public function get($key)
+    {
+        return $this->fetch($key);
+    }
+
+    /**
+     * @param $key
+     * @return mixed|void
+     */
+    protected function resolve($key)
+    {
+        if (!isset($this->rawObjs[$key])) {
+            return;
+        }
+        if (is_callable($this->rawObjs[$key])) {
+            return call_user_func($this->rawObjs[$key]);
+        }
+        return $this->rawObjs[$key];
+    }
+
+    /**
+     * @param $key
+     * @return mixed
+     */
+    protected function fetch($key)
+    {
+        if (!isset($this->resolvedObj[$key])) {
+            $this->resolvedObj[$key] = $this->resolve($key);
+        }
+        return $this->resolvedObj[$key];
+    }
+
+
 }

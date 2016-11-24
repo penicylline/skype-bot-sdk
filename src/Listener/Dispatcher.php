@@ -39,11 +39,6 @@ class Dispatcher
      */
     protected $apiLogger;
 
-    /**
-     * @var Payload
-     */
-    protected $payload;
-
     protected $headers;
 
     public function __construct(Security $security)
@@ -53,14 +48,14 @@ class Dispatcher
 
     public function dispatch()
     {
-        $this->fetchRequest();
-        if ($this->payload instanceof MessagePayload) {
+        $payload = $this->fetchRequest();
+        if ($payload instanceof MessagePayload) {
             $this->handleMessage();
         }
-        if ($this->payload instanceof ConversationUpdatePayload) {
+        if ($payload instanceof ConversationUpdatePayload) {
             $this->handleContactUpdate();
         }
-        if ($this->payload instanceof ContactUpdatePayload) {
+        if ($payload instanceof ContactUpdatePayload) {
             $this->handleContactUpdate();
         }
 
@@ -99,8 +94,8 @@ class Dispatcher
         if (empty($requestObj)) {
             throw new PayloadException('Empty or invalid json format: "' . $requestBody . '"');
         }
-        $this->payload = PayloadFactory::createPayload($requestObj);
         $this->logRequest($requestBody);
+        return PayloadFactory::createPayload($requestObj);
     }
 
     protected function sendResponse()
@@ -108,42 +103,42 @@ class Dispatcher
         http_response_code(201);
     }
 
-    protected function handleMessage() {
+    protected function handleMessage(MessagePayload $payload) {
         if ($this->messageHandler === null)
         {
             return;
         }
         if ($this->messageHandler instanceof MessageHandler) {
-            return $this->messageHandler->handlerMessage($this->payload);
+            return $this->messageHandler->handlerMessage($payload);
         }
         if (is_callable($this->messageHandler)){
-            call_user_func_array($this->messageHandler, [$this->payload]);
+            call_user_func_array($this->messageHandler, [$payload]);
         }
     }
 
-    protected function handleContactUpdate() {
+    protected function handleContactUpdate(ContactUpdatePayload $payload) {
         if ($this->contactUpdateHandler === null)
         {
             return;
         }
         if ($this->contactUpdateHandler instanceof ContactUpdateHandler) {
-            return $this->contactUpdateHandler->handlerPayload($this->payload);
+            return $this->contactUpdateHandler->handlerPayload($payload);
         }
         if (is_callable($this->contactUpdateHandler)){
-            call_user_func_array($this->contactUpdateHandler, [$this->payload]);
+            call_user_func_array($this->contactUpdateHandler, [$payload]);
         }
     }
 
-    protected function handleConversationUpdate()
+    protected function handleConversationUpdate(ConversationUpdatePayload $payload)
     {
         if ($this->conversationUpdateHandler === null) {
             return;
         }
         if ($this->conversationUpdateHandler instanceof ConversationUpdateHandler) {
-            return $this->conversationUpdateHandler->handlerPayload($this->payload);
+            return $this->conversationUpdateHandler->handlerPayload($payload);
         }
         if (is_callable($this->conversationUpdateHandler)){
-            call_user_func_array($this->conversationUpdateHandler, [$this->payload]);
+            call_user_func_array($this->conversationUpdateHandler, [$payload]);
         }
     }
 

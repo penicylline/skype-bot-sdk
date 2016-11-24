@@ -16,5 +16,8 @@
         "psr-4": {
             "SkypeBot\\": "src"
         }
+    },
+    "require-dev": {
+        "codeclimate/php-test-reporter": "dev-master"
     }
 }
