@@ -19,6 +19,11 @@ https://dev.botframework.com/bots/new
  
 Set your bot's "Messaging endpoint" to https://yourdomain/listener.php
 
+Installation
+
+composer require penicylline/skype-bot-sdk
+or require_once <vendor_dir>/SkypeBot/autoload.php
+
 Initialize bot
 
 ```php

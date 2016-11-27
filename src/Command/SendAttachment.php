@@ -2,10 +2,14 @@
 namespace SkypeBot\Command;
 
 use SkypeBot\Api\Api;
+use SkypeBot\Entity\Activity;
+use SkypeBot\Entity\Attachment;
+use SkypeBot\Entity\AttachmentFactory;
 use SkypeBot\SkypeBot;
 
-class Message extends Command {
+class SendAttachment extends Command {
 
+    protected $attachment;
     protected $message;
     protected $conversation;
 
@@ -14,9 +18,10 @@ class Message extends Command {
      * @param $message
      * @param $conversation
      */
-    public function __construct($message, $conversation) {
-        $this->message = $message;
+    public function __construct(Attachment $attachment, $conversation, $message = null) {
+        $this->attachment = $attachment;
         $this->conversation = $conversation;
+        $this->message = $message;
     }
 
     /**
@@ -25,14 +30,15 @@ class Message extends Command {
     public function getApi()
     {
         $config = SkypeBot::getInstance()->getConfig();
+        $activity = new Activity();
+        $activity->addAttachment($this->attachment);
+        if ($this->message) {
+            $activity->setText($this->message);
+        }
         return new Api(
             $config->getApiEndpoint() . '/v3/conversations/' . $this->conversation . '/activities',
             array(
-                Api::PARAM_JSON_REQUEST => true,
-                APi::PARAM_PARAMS => array(
-                    'type' => 'message/text',
-                    'text' => $this->message
-                )
+                APi::PARAM_PARAMS => $activity->getRaw()
             )
         );
     }

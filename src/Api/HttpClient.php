@@ -1,10 +1,7 @@
 <?php
 namespace SkypeBot\Api;
 
-use SkypeBot\Exception\CurlException;
-use SkypeBot\Exception\ResponseException;
 use SkypeBot\Interfaces\ApiLogger;
-use SkypeBot\Storage\SimpleApiLogger;
 
 class HttpClient {
 
@@ -124,7 +121,8 @@ class HttpClient {
         return $result;
     }
 
-    public function getError() {
+    public function getError()
+    {
         return $this->error;
     }
 

@@ -3,8 +3,7 @@ namespace SkypeBot\Command;
 
 use SkypeBot\Api\Api;
 use SkypeBot\Api\HttpClient;
-use SkypeBot\DataProvider\OpenIdConfigProvider;
-use SkypeBot\Entity\OpenIdConfig;
+use SkypeBot\Entity\Jwk\OpenIdConfig;
 use SkypeBot\SkypeBot;
 
 class GetOpenIdConfiguration extends Command {

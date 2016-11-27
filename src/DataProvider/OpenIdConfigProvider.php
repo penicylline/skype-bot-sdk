@@ -1,7 +1,7 @@
 <?php
 namespace SkypeBot\DataProvider;
 
-use SkypeBot\Entity\OpenIdConfig;
+use SkypeBot\Entity\Jwk\OpenIdConfig;
 use SkypeBot\Interfaces\DataStorage;
 
 class OpenIdConfigProvider extends DataProvider

@@ -2,7 +2,7 @@
 namespace SkypeBot\DataProvider;
 
 use SkypeBot\Command\GetListSigningKeys;
-use SkypeBot\Entity\JsonWebKey;
+use SkypeBot\Entity\Jwk\JsonWebKey;
 use SkypeBot\Interfaces\DataStorage;
 use SkypeBot\SkypeBot;
 

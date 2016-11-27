@@ -3,9 +3,9 @@
 namespace SkypeBot\Listener;
 
 use SkypeBot\DataProvider\OpenIdKeysProvider;
-use SkypeBot\Entity\JsonWebKey;
-use SkypeBot\Entity\JwkInfo;
-use SkypeBot\Entity\JwkPayload;
+use SkypeBot\Entity\Jwk\JsonWebKey;
+use SkypeBot\Entity\Jwk\JwkInfo;
+use SkypeBot\Entity\Jwk\JwkPayload;
 use SkypeBot\Exception\SecurityException;
 use SkypeBot\SkypeBot;
 
@@ -31,10 +31,11 @@ class Security
     public function validateBearerHeader($header)
     {
         $bearerData = $this->extractBearerData($header);
-        list($keyInfo, $payload, $signature) = explode('.', $bearerData);
-        if (!isset($keyInfo, $payload, $signature)) {
+        $tokenParts = explode('.', $bearerData);
+        if (count($tokenParts) !== 3) {
             throw new SecurityException('Authenticate header is not valid format');
         }
+        list($keyInfo, $payload, $signature) = $tokenParts;
         $keyInfoObj = json_decode(base64_decode($keyInfo));
         $payloadObj = json_decode(base64_decode($payload));
 

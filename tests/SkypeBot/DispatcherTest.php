@@ -84,9 +84,10 @@ class DispatcherTest extends TestCase
             ->will($this->returnValue($conversation));
 
         $this->bot->set('request', $mock);
+        $this->bot->getNotificationListener()->setApiLogger($this->getMock('\\SkypeBot\\Storage\\SimpleApiLogger', ['log']));
     }
 
-    function testHandler()
+    function testHandlers()
     {
         $this->bot->getNotificationListener()->setMessageHandler(function($payload){
             echo $payload->getText();

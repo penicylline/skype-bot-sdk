@@ -68,6 +68,9 @@ class Api {
     }
 
     public function isJsonRequest() {
+        if ($this->requestParams instanceof \stdClass) {
+            return true;
+        }
         return $this->jsonRequest ? true : false;
     }
 

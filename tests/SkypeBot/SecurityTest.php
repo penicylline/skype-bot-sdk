@@ -24,23 +24,148 @@ class SecurityTest extends TestCase
         $k->e = 'AQAB';
         $k->x5c = ['MIIB0zCCAX2gAwIBAgIJAI3IleFgCVOrMA0GCSqGSIb3DQEBCwUAMEUxCzAJBgNVBAYTAkFVMRMwEQYDVQQIDApTb21lLVN0YXRlMSEwHwYDVQQKDBhJbnRlcm5ldCBXaWRnaXRzIFB0eSBMdGQwHhcNMTYxMTI0MTAwMTMyWhcNMTcxMTI0MTAwMTMyWjBFMQswCQYDVQQGEwJBVTETMBEGA1UECAwKU29tZS1TdGF0ZTEhMB8GA1UECgwYSW50ZXJuZXQgV2lkZ2l0cyBQdHkgTHRkMFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBALcrQ09cMPoQbi4pWhNgo88G7HnaYJaDp38w/cvHUC+qdHPSPmKK0EeJjj1PtbJvJucYRlruJvTwjmB+YXM+uTsCAwEAAaNQME4wHQYDVR0OBBYEFAJk3IpUH8iwul2rpV6ciWTNc1cwMB8GA1UdIwQYMBaAFAJk3IpUH8iwul2rpV6ciWTNc1cwMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQELBQADQQAMKN/HpL0NVQqPfGAfnO27cOK4qouP6/o62PhuqNZHsAt9dFqTaW9baj5d3NuNwLz8Cye/afAmYLLcdiQz6AFL'];
 
-        $key = new \SkypeBot\Entity\JsonWebKey($k);
+        $key = new \SkypeBot\Entity\Jwk\JsonWebKey($k);
 
         $keys = $this->getMockBuilder('\\SkypeBot\\DataProvider\\OpenIdKeysProvider')
             ->disableOriginalConstructor()
             ->getMock();
-        $keys->expects($this->any())
+        $keys->expects($this->any(0))
             ->method('getKeyById')
             ->will($this->returnValue($key));
+        $keys->expects($this->any(1))
+            ->method('getKeyById')
+            ->will($this->returnValue(null));
+//        $keys->expects($this->at(1))
+//            ->method('getKeyById')
+//            ->will($this->returnValue(null));
         $this->bot->set('openid_keys', $keys);
     }
 
-    function testConstructor()
+    function testValidToken()
     {
-        $this->bot->set('',null);
         $security = new \SkypeBot\Listener\Security();
         $res = $security->validateBearerHeader('Bearer ' . $this->buildToken());
         $this->assertEquals(1, $res);
+    }
+
+    /**
+     * @dataProvider exceptionList
+     */
+    function testInvalidToken($header, $message)
+    {
+        $security = new \SkypeBot\Listener\Security();
+        try {
+            $security->validateBearerHeader($header);
+        } catch (\SkypeBot\Exception\SecurityException $ex) {
+            $msg = $ex->getMessage();
+        }
+        $this->assertEquals($msg, $message);
+    }
+
+    public function exceptionList()
+    {
+        return [
+            [
+                'header' => '',
+                'message' => 'Authorization header should start with Bearer'
+            ],
+            [
+                'header' => 'Bearer ',
+                'message' => 'Authenticate header is not valid format'
+            ],
+            [
+                'header' => 'Bearer a',
+                'message' => 'Authenticate header is not valid format'
+            ],
+            [
+                'header' => 'Bearer a.b',
+                'message' => 'Authenticate header is not valid format'
+            ],
+            [
+                'header' => 'Bearer a.b.c',
+                'message' => 'Authenticate header key info part is not valid format'
+            ],
+            [
+                'header' => 'Bearer '.
+                    base64_encode('
+                    {
+                        "typ":"1",
+                        "alg":"RS2566",
+                        "kid":"3",
+                        "x5t":"4"
+                    }
+                    '). '.' .
+                    base64_encode('
+                    {
+                        "iss":"1",
+                        "aud":"2",
+                        "exp": ' . (time() + 9999) .  ',
+                        "nbf":"0"
+                    }
+                    ') . '.a',
+                'message' => 'Unsupported key type: RS2566'
+            ]
+        ];
+    }
+
+    /**
+     * @dataProvider invalidTimeToken
+     */
+    function testInvalidTimeToken($header, $message)
+    {
+        $security = new \SkypeBot\Listener\Security();
+        try {
+            $security->validateBearerHeader($header);
+        } catch (\SkypeBot\Exception\SecurityException $ex) {
+            $msg = $ex->getMessage();
+        }
+        $this->assertEquals(0, strpos($msg, $message));
+    }
+
+    public function invalidTimeToken()
+    {
+        return [
+            [
+                'header' => 'Bearer '.
+                    base64_encode('
+                    {
+                        "typ":"1",
+                        "alg":"RS256",
+                        "kid":"3",
+                        "x5t":"4"
+                    }
+                    '). '.' .
+                    base64_encode('
+                    {
+                        "iss":"1",
+                        "aud":"2",
+                        "exp": "0",
+                        "nbf":"1"
+                    }
+                    ') . '.a',
+                'message' => 'Token expired at'
+            ],
+            [
+                'header' => 'Bearer '.
+                    base64_encode('
+                    {
+                        "typ":"1",
+                        "alg":"RS256",
+                        "kid":"3",
+                        "x5t":"4"
+                    }
+                    '). '.' .
+                    base64_encode('
+                    {
+                        "iss":"1",
+                        "aud":"2",
+                        "exp": ' . (time() + 9999) .  ',
+                        "nbf":"2222222222"
+                    }
+                    ') . '.a',
+                'message' => 'Token cannot use before'
+            ]
+        ];
     }
 
     private function buildToken()

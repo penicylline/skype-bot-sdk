@@ -4,7 +4,7 @@ namespace SkypeBot\Command;
 use SkypeBot\Api\Api;
 use SkypeBot\Api\HttpClient;
 use SkypeBot\DataProvider\OpenIdKeysProvider;
-use SkypeBot\Entity\JsonWebKey;
+use SkypeBot\Entity\Jwk\JsonWebKey;
 use SkypeBot\Exception\PayloadException;
 use SkypeBot\SkypeBot;
 

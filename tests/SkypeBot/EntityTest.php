@@ -107,7 +107,7 @@ class EntityTest extends TestCase
             "nbf":"4"
         }
         ');
-        $payload = new \SkypeBot\Entity\JwkPayload($obj);
+        $payload = new \SkypeBot\Entity\Jwk\JwkPayload($obj);
         $this->assertEquals($payload->getExpired(), 3);
         $this->assertEquals($payload->getNotBefore(), 4);
     }
@@ -122,7 +122,7 @@ class EntityTest extends TestCase
             "x5t":"4"
         }
         ');
-        $info = new \SkypeBot\Entity\JwkInfo($obj);
+        $info = new \SkypeBot\Entity\Jwk\JwkInfo($obj);
         $this->assertEquals($info->getAlgorithm(), 2);
         $this->assertEquals($info->getKeyId(), 3);
         $this->assertEquals($info->getType(), 1);

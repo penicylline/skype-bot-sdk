@@ -17,6 +17,6 @@ class Address extends Entity
      */
     protected function getRequiredFields()
     {
-        return array('id', 'name');
+        return array('id');
     }
 }

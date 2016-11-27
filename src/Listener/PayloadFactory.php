@@ -10,7 +10,7 @@ use SkypeBot\Entity\Payload;
 
 class PayloadFactory
 {
-    public static function createPayload($requestObj)
+    public static function createPayload(\stdClass $requestObj)
     {
         $payload = new Payload($requestObj);
         switch ($payload->getType()) {

@@ -1,6 +1,8 @@
 <?php
-namespace SkypeBot\Entity;
+namespace SkypeBot\Entity\Jwk;
 
+
+use SkypeBot\Entity\Entity;
 
 class JwkInfo extends Entity
 {
