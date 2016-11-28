@@ -2,10 +2,13 @@
 
 namespace SkypeBot\Entity\Card;
 
+use SkypeBot\Entity\Card\Traits\HasTitle;
 use SkypeBot\Entity\Entity;
 
 class CardAction extends Entity
 {
+    use HasTitle;
+
     const TYPE_DOWNLOAD_FILE = 'downloadFile';
     const TYPE_IM_BACK = 'imBack';
     const TYPE_OPEN_URL = 'openUrl';
@@ -24,15 +27,6 @@ class CardAction extends Entity
         return $this->get('image');
     }
 
-    function setTitle($title)
-    {
-        return $this->set('title', $title);
-    }
-
-    function getTitle()
-    {
-        return $this->get('title');
-    }
 
     function setType($type)
     {

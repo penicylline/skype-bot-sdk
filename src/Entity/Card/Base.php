@@ -2,33 +2,18 @@
 
 namespace SkypeBot\Entity\Card;
 
+use SkypeBot\Entity\Card\Traits\HasText;
+use SkypeBot\Entity\Card\Traits\HasTitle;
 use SkypeBot\Entity\Entity;
 
 abstract class Base extends Entity
 {
+    use HasText;
+    use HasTitle;
+
     public function __construct()
     {
         $this->rawObj = new \stdClass();
-    }
-
-    function setText($text)
-    {
-        return $this->set('text', $text);
-    }
-
-    function getText()
-    {
-        return $this->get('text');
-}
-
-    function setTitle($title)
-    {
-        return $this->set('title', $title);
-    }
-
-    function getTitle()
-    {
-        return $this->get('title');
     }
 
     function addButton(CardAction $button)

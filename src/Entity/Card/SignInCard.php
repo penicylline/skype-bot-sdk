@@ -9,5 +9,4 @@ class SignInCard extends Base
     {
         return 'application/vnd.microsoft.card.signin';
     }
-
 }

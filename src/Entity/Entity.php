@@ -20,7 +20,7 @@ abstract class Entity
         return $this->rawObj;
     }
 
-    protected function get($property, $type = null) {
+    public function get($property, $type = null) {
         if (property_exists($this->rawObj, $property)) {
             if ($type && !($this->rawObj->{$property} instanceof $type)) {
                 $this->rawObj->{$property} = new $type($this->rawObj->{$property});
@@ -36,13 +36,21 @@ abstract class Entity
      * @return $this
      * @throws PayloadException
      */
-    public function set($key, $value)
+    public function set($key, $value, $xmlSafe = true)
     {
         $this->validateInput($key, $value);
         if ($value instanceof Entity) {
             $this->rawObj->{$key} = $value->getRaw();
         } else {
-            $this->rawObj->{$key} = $value;
+            if (is_string($value) && $xmlSafe) {
+                $this->rawObj->{$key} = str_replace(
+                    ['<', '>'],
+                    ['&lt;', '&gt;'],
+                    $value
+                );
+            } else {
+                $this->rawObj->{$key} = $value;
+            }
         }
         return $this;
     }

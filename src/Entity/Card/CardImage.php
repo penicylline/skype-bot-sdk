@@ -8,10 +8,13 @@
 
 namespace SkypeBot\Entity\Card;
 
+use SkypeBot\Entity\Card\Traits\Tapable;
 use SkypeBot\Entity\Entity;
 
 class CardImage extends Entity
 {
+    use Tapable;
+
     function setAlt($alt)
     {
         return $this->set('alt', $alt);
@@ -20,19 +23,6 @@ class CardImage extends Entity
     function getAlt()
     {
         return $this->get('alt');
-    }
-
-    function setTap(CardAction $tap)
-    {
-        return $this->set('tap', $tap);
-    }
-
-    /**
-     * @return null|CardAction
-     */
-    function getTap()
-    {
-        return $this->get('tap');
     }
 
     function setUrl($url)

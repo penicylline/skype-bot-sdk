@@ -2,22 +2,20 @@
 
 namespace SkypeBot\Entity\Card;
 
+use SkypeBot\Entity\Card\Traits\HasImage;
+use SkypeBot\Entity\Card\Traits\HasSubtitle;
+use SkypeBot\Entity\Card\Traits\HasText;
+use SkypeBot\Entity\Card\Traits\HasTitle;
+use SkypeBot\Entity\Card\Traits\Tapable;
 use SkypeBot\Entity\Entity;
 
 class ReceiptItem extends Entity
 {
-    function setImage(CardImage $image)
-    {
-        return $this->set('image', $image);
-    }
-
-    /**
-     * @return null|CardImage
-     */
-    function getImage()
-    {
-        return $this->get('image');
-    }
+    use Tapable;
+    use HasSubtitle;
+    use HasImage;
+    use HasText;
+    use HasTitle;
 
     function setPrice($price)
     {
@@ -37,48 +35,5 @@ class ReceiptItem extends Entity
     function getQuantity()
     {
         return $this->get('quantity');
-    }
-
-    function setSubtitle($subtitle)
-    {
-        return $this->set('subtitle', $subtitle);
-    }
-
-    function getSubtitle()
-    {
-        return $this->get('subtitle');
-    }
-
-    function setTap(CardAction $tap)
-    {
-        return $this->set('tap', $tap);
-    }
-
-    /**
-     * @return null|CardAction
-     */
-    function getTap()
-    {
-        return $this->get('tap');
-    }
-
-    function setText($text)
-    {
-        return $this->set('text', $text);
-    }
-
-    function getText()
-    {
-        return $this->get('text');
-    }
-
-    function setTitle($title)
-    {
-        return $this->set('title', $title);
-    }
-
-    function getTitle()
-    {
-        return $this->get('title');
     }
 }

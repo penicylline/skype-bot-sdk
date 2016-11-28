@@ -2,8 +2,11 @@
 
 namespace SkypeBot\Entity\Card;
 
+use SkypeBot\Entity\Card\Traits\Tapable;
+
 class ReceiptCard extends Base
 {
+    use Tapable;
 
     public function getContentType()
     {
@@ -30,16 +33,6 @@ class ReceiptCard extends Base
         return $this->get('items');
     }
 
-    function setTap(CardAction $tap)
-    {
-        return $this->set('tap', $tap);
-    }
-
-    function getTap()
-    {
-        return $this->get('tap', CardAction::class);
-    }
-
     function setTax($tax)
     {
         return $this->set('tax', $tax);
@@ -48,16 +41,6 @@ class ReceiptCard extends Base
     function getTax()
     {
         return $this->get('tax');
-    }
-
-    function setTitle($title)
-    {
-        return $this->set('title', $title);
-    }
-
-    function getTitle()
-    {
-        return $this->get('title');
     }
 
     function setTotal($total)

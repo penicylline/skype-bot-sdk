@@ -2,46 +2,18 @@
 
 namespace SkypeBot\Entity\Card;
 
+use SkypeBot\Entity\Card\Traits\HasSubtitle;
+use SkypeBot\Entity\Card\Traits\ImageList;
+use SkypeBot\Entity\Card\Traits\Tapable;
+
 class ThumbnailCard extends Base
 {
+    use Tapable;
+    use ImageList;
+    use HasSubtitle;
 
     public function getContentType()
     {
         return 'application/vnd.microsoft.card.thumbnail';
     }
-
-    function addImage(CardImage $image)
-    {
-        return $this->add('images', $image);
-    }
-
-    function getImages()
-    {
-        return $this->get('images');
-    }
-
-    function setSubtitle($subtitle)
-    {
-        return $this->set('subtitle', $subtitle);
-    }
-
-    function getSubtitle()
-    {
-        return $this->get('subtitle');
-    }
-
-    function setTap(CardAction $tap)
-    {
-        return $this->set('tap', $tap);
-    }
-
-    /**
-     * @return null|CardAction
-     */
-    function getTap()
-    {
-        return $this->get('tap', CardAction::class);
-    }
-
-
 }
