@@ -4,6 +4,7 @@ namespace SkypeBot\Command;
 use SkypeBot\Api\Api;
 
 abstract class Command {
+
     /**
      * @return Api
      */

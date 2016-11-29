@@ -89,5 +89,40 @@ class CardsTest extends TestCase
         $image->setUrl('u');
         $card->addImage($image);
         $this->assertEquals($card->getImages()[0]->url, 'u');
+        $this->assertEquals($card->getContentType(), 'application/vnd.microsoft.card.hero');
     }
+
+    function testAnicationCard()
+    {
+        $card = new \SkypeBot\Entity\Card\AnimationCard();
+        $this->assertEquals($card->getContentType(), 'application/vnd.microsoft.card.animation');
+    }
+
+    function testReceiptCard()
+    {
+        $button = new \SkypeBot\Entity\Card\CardAction();
+        $button->setImage('i');
+        $card = new \SkypeBot\Entity\Card\ReceiptCard();
+        $card->setTap($button);
+        $this->assertEquals($card->getTap()->getImage(), 'i');
+        $this->assertEquals($card->getContentType(), 'application/vnd.microsoft.card.receipt');
+        $card->setTax(1);
+        $this->assertEquals($card->getTax(), 1);
+        $card->setVat(2);
+        $this->assertEquals($card->getVat(), 2);
+        $card->setTotal(3);
+        $this->assertEquals($card->getTotal(), 3);
+
+        $fact = new \SkypeBot\Entity\Card\Fact();
+        $fact->setKey('k');
+        $card->addFact($fact);
+        $this->assertEquals($card->getFacts()[0]->key, 'k');
+
+        $item = new \SkypeBot\Entity\Card\ReceiptItem();
+        $item->setPrice('p');
+        $card->addItem($item);
+        $this->assertEquals($card->getItems()[0]->price, 'p');
+
+    }
+
 }

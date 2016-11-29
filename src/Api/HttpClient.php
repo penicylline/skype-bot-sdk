@@ -7,6 +7,8 @@ class HttpClient {
 
     const METHOD_POST = 'post';
     const METHOD_GET = 'get';
+    const METHOD_PUT = 'put';
+    const METHOD_DELETE = 'delete';
 
     protected $headers = array();
     protected $cookies = array();
@@ -82,35 +84,45 @@ class HttpClient {
                 $url .= '?' . $strParams;
             }
         }
-        $this->log('>>>>>> GET >>>>>>');
-        $this->log($url);
-        curl_setopt($channel, CURLOPT_URL, $url);
-
-        $result = $this->fetchResult($channel);
-        if (!$result) {
-            $this->error = curl_error($channel);
-        }
-        $this->closeCurl($channel);
-        return $result;
+        return $this->doRequest(static::METHOD_GET, $url);
     }
 
     public function post($url, $params = array())
     {
-        $this->log('>>>>>> POST >>>>>>');
+        return $this->doRequest(static::METHOD_POST, $url, $params);
+    }
+
+    public function put($url, $params = array())
+    {
+        return $this->doRequest(static::METHOD_POST, $url, $params);
+    }
+
+    public function delete($url, $params = array())
+    {
+        return $this->doRequest(static::METHOD_DELETE, $url, $params);
+    }
+
+    private function doRequest($type, $url, $params = array())
+    {
+        $method = strtoupper($type);
+        $this->log('>>>>>> ' . $method . ' >>>>>>');
         $this->log($url);
-        $this->log(print_r($params, true));
-        if (is_string($params)) {
-            $strParams = $params;
-        } else {
-            $strParams = http_build_query($params);
-        }
+
         $channel = $this->initCurl();
-        
         curl_setopt($channel, CURLOPT_URL, $url);
-        if (!is_string($params)) {
-            curl_setopt($channel, CURLOPT_POST, count($params));
+        curl_setopt($channel, CURLOPT_CUSTOMREQUEST, $method);
+        if (!empty($params)) {
+            $this->log(print_r($params, true));
+            if (is_string($params)) {
+                $strParams = $params;
+            } else {
+                $strParams = http_build_query($params);
+            }
+            if (!is_string($params)) {
+                curl_setopt($channel, CURLOPT_POST, count($params));
+            }
+            curl_setopt($channel, CURLOPT_POSTFIELDS, $strParams);
         }
-        curl_setopt($channel, CURLOPT_POSTFIELDS, $strParams);
 
         $result = $this->fetchResult($channel);
         if (!$result) {

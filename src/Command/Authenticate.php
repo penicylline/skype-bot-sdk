@@ -7,7 +7,8 @@ use SkypeBot\DataProvider\TokenProvider;
 use SkypeBot\Entity\AccessToken;
 use SkypeBot\SkypeBot;
 
-class Authenticate extends Command {
+class Authenticate extends AnonymousCommand
+{
 
     protected $appId;
     protected $appSecret;

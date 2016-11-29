@@ -1,6 +1,7 @@
 <?php
 namespace SkypeBot\Api;
 
+use SkypeBot\Command\AnonymousCommand;
 use SkypeBot\Command\Authenticate;
 use SkypeBot\Command\Command;
 use SkypeBot\DataProvider\TokenProvider;
@@ -75,20 +76,31 @@ class ApiClient {
     {
         $api = $command->getApi();
         $fullUrl = $api->getRequestUrl();
-        if (!($command instanceof Authenticate)) {
+        if (!($command instanceof AnonymousCommand)) {
             $this->getHttpClient()->setHeader(
                 'Authorization',
                 'Bearer ' . $this->getTokenProvider()->getAccessToken()->getToken()
             );
         }
-        if ($api->getRequestMethod() == HttpClient::METHOD_POST) {
-            if ($api->isJsonRequest()) {
-                $result = $this->getHttpClient()->post($fullUrl, json_encode($api->getRequestParams()));
-            } else {
-                $result = $this->getHttpClient()->post($fullUrl, $api->getRequestParams());
-            }
-        } else {
+        $requestMethod = $api->getRequestMethod();
+        if ($requestMethod == HttpClient::METHOD_GET) {
             $result = $this->getHttpClient()->get($fullUrl, $api->getRequestParams());
+        } else {
+            $params = $api->getRequestParams();
+            if ($api->isJsonRequest()) {
+                $params = json_encode($params);
+            }
+            switch ($requestMethod) {
+                case HttpClient::METHOD_POST:
+                    $result = $this->getHttpClient()->post($fullUrl, $params);
+                    break;
+                case HttpClient::METHOD_PUT:
+                    $result = $this->getHttpClient()->put($fullUrl, $params);
+                    break;
+                case HttpClient::METHOD_DELETE:
+                    $result = $this->getHttpClient()->delete($fullUrl, $params);
+                    break;
+            }
         }
         if (!$result) {
             if ($this->getHttpClient()->getReturnCode() == 401) {

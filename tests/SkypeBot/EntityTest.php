@@ -128,4 +128,38 @@ class EntityTest extends TestCase
         $this->assertEquals($info->getType(), 1);
     }
 
+    function testResult()
+    {
+        $obj = json_decode('
+        {
+            "error": {"message": "e"},
+            "id": "1"
+        }
+        ');
+        $result = new \SkypeBot\Entity\Result($obj);
+        $this->assertEquals($result->getError()->getMessage(), 'e');
+        $this->assertEquals($result->getId(), 1);
+    }
+
+    function testAttachmentFactory()
+    {
+        $attachment = \SkypeBot\Entity\AttachmentFactory::createMedia(
+            \SkypeBot\Entity\AttachmentFactory::MEDIA_AUDIO,
+            'u',
+            'n'
+        );
+        $this->assertEquals($attachment->getContentUrl(), 'u');
+        $this->assertEquals($attachment->getName(), 'n');
+        try {
+            \SkypeBot\Entity\AttachmentFactory::createMedia(
+                'exception',
+                'u'
+            );
+        } catch (\SkypeBot\Exception\PayloadException $ex) {
+            $msg = $ex->getMessage();
+        }
+
+        $this->assertNotNull($msg);
+    }
+
 }

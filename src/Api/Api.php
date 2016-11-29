@@ -34,8 +34,14 @@ class Api {
 
     public function setRequestMethod($method)
     {
-        if ($method === HttpClient::METHOD_GET) {
-            $this->options[static::PARAM_METHOD] = HttpClient::METHOD_GET;
+        $supportedMethods = [
+            HttpClient::METHOD_GET,
+            HttpClient::METHOD_POST,
+            HttpClient::METHOD_PUT,
+            HttpClient::METHOD_DELETE
+        ];
+        if (in_array($method, $supportedMethods)) {
+            $this->options[static::PARAM_METHOD] = $method;
         } else {
             $this->options[static::PARAM_METHOD] = HttpClient::METHOD_POST;
         }

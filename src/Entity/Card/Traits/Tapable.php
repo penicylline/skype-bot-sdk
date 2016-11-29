@@ -21,6 +21,6 @@ trait Tapable
      */
     function getTap()
     {
-        return $this->get('tap');
+        return $this->get('tap', CardAction::class);
     }
 }

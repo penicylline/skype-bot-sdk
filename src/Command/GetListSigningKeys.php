@@ -8,7 +8,8 @@ use SkypeBot\Entity\Jwk\JsonWebKey;
 use SkypeBot\Exception\PayloadException;
 use SkypeBot\SkypeBot;
 
-class GetListSigningKeys extends Command {
+class GetListSigningKeys extends AnonymousCommand
+{
 
     private $endpoint;
 

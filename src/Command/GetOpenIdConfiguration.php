@@ -6,7 +6,8 @@ use SkypeBot\Api\HttpClient;
 use SkypeBot\Entity\Jwk\OpenIdConfig;
 use SkypeBot\SkypeBot;
 
-class GetOpenIdConfiguration extends Command {
+class GetOpenIdConfiguration extends AnonymousCommand
+{
 
     /**
      * @return Api
