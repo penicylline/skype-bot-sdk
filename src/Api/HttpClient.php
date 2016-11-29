@@ -94,7 +94,7 @@ class HttpClient {
 
     public function put($url, $params = array())
     {
-        return $this->doRequest(static::METHOD_POST, $url, $params);
+        return $this->doRequest(static::METHOD_PUT, $url, $params);
     }
 
     public function delete($url, $params = array())
