@@ -29,6 +29,16 @@ class Payload extends Entity
         return $this->get('conversation', Conversation::class);
     }
 
+    function setConversation(Conversation $conversation)
+    {
+        return $this->set('conversation', $conversation);
+    }
+
+    public function setType($type)
+    {
+        return $this->set('type', $type);
+    }
+
     /**
      * @return Address
      */
@@ -66,13 +76,5 @@ class Payload extends Entity
             }
         }
         return $this->type;
-    }
-
-    /**
-     * @return array
-     */
-    protected function getRequiredFields()
-    {
-        return array();
     }
 }

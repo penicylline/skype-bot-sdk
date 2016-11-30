@@ -11,4 +11,9 @@ class MessagePayload extends Payload
         $text = str_replace("\xc2\xa0", ' ', $text);
         return html_entity_decode($text);
     }
+
+    public function setText($text)
+    {
+        $this->set('text', $text);
+    }
 }

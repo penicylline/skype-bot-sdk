@@ -19,6 +19,16 @@ class Activity extends Entity
         $this->rawObj->type = static::TYPE_TEXT;
     }
 
+    function setConversation(Conversation $conversation)
+    {
+        return $this->set('conversation', $conversation);
+    }
+
+    function getConversation()
+    {
+        return $this->get('conversation', Conversation::class);
+    }
+
     public function setType($type)
     {
         return $this->set('type', $type);

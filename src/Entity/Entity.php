@@ -44,8 +44,8 @@ abstract class Entity
         } else {
             if (is_string($value) && $xmlSafe) {
                 $this->rawObj->{$key} = str_replace(
-                    ['<', '>'],
-                    ['&lt;', '&gt;'],
+                    ['<', '>', '&'],
+                    ['&lt;', '&gt;', '&amp;'],
                     $value
                 );
             } else {

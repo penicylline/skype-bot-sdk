@@ -12,6 +12,14 @@ class Address extends Entity
         return $this->get('name');
     }
 
+    public function setId($id) {
+        return $this->set('id', $id);
+    }
+
+    public function setName($name) {
+        return $this->set('name', $name);
+    }
+
     /**
      * @return array
      */
