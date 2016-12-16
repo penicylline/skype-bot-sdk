@@ -53,7 +53,7 @@ Send message to conversation
 
 ```php
 $bot->getApiClient()->call(
-    new \SkypeBot\Command\Message(
+    new \SkypeBot\Command\SendMessage(
         'Hello World.',
         'Your conversation id'
     )
