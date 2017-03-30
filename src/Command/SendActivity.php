@@ -37,4 +37,22 @@ class SendActivity extends ApiCommand
             )
         );
     }
+
+    /**
+     * @return Activity
+     */
+    public function getActivity()
+    {
+        return $this->activity;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getConversation()
+    {
+        return $this->conversation;
+    }
+
+
 }
