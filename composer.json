@@ -1,5 +1,5 @@
 {
-    "name": "penicylline/skype-bot-sdk",
+    "name": "amaxlab/skype-bot-sdk",
     "description": "PHP SDK for Microsoft skype bot framework",
     "require": {
         "php": ">=5.5",
