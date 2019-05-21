@@ -31,7 +31,7 @@ class Authenticate extends AnonymousCommand
             array (
                 Api::PARAM_PARAMS => array(
                     'grant_type' => 'client_credentials',
-                    'scope' => 'https://graph.microsoft.com/.default',
+                    'scope' => 'https://api.botframework.com/.default',
                     'client_id' => $this->appId,
                     'client_secret' => $this->appSecret
                 ),
